@@ -1,0 +1,67 @@
+#include <windows.h>
+#include <stdio.h>
+#define Wall	0x00B8C15C
+int SPK;
+
+__declspec( naked ) DWORD WINAPI Main( void * )
+{
+	if(GetAsyncKeyState(VK_F6))
+		SPK = !SPK;
+		if (SPK)
+		{
+	static char *lpModuleName = "CShell.dll";
+	static float fSKillValue = 220.0f;
+	static DWORD dwModelNode = 0x01B18994;
+
+	__asm
+	{
+		PUSH lpModuleName
+		CALL DWORD PTR DS : [GetModuleHandleA]
+		TEST EAX, EAX
+		JE _RET
+		MOV EDX, DWORD PTR DS : [dwModelNode]
+		MOV EAX, DWORD PTR DS : [EAX + EDX]
+		TEST EAX, EAX
+		JE _RET
+		FLD DWORD PTR DS : [fSKillValue]
+		FSTP DWORD PTR DS : [EAX + 0x210]
+		FLD DWORD PTR DS : [fSKillValue]
+		FSTP DWORD PTR DS : [EAX + 0x214]
+		FLD DWORD PTR DS : [fSKillValue]
+		FSTP DWORD PTR DS : [EAX + 0x20c]
+        _RET :
+		PUSH 0x86
+		PUSH 0x64
+			 XOR EAX, EAX
+	}
+    }
+}
+
+UINT WINAPI Init(void *)
+{
+	static int Variavel;
+
+	while (1)
+	{
+		if (GetAsyncKeyState(VK_F5))
+			Variavel = !Variavel;
+		if (Variavel)
+		{
+		    memcpy((VOID*)0xB8D0D2, "\x86\x00\x68\x00\x00\x00", 6);
+		}
+		else
+		{
+			memcpy((VOID*)0xB8D0D2, "\x86\x00\x68\x00\x00\x00", 6);
+		}
+		
+		Sleep(100);
+	}
+}
+
+BOOL APIENTRY DllMain(HINSTANCE hModule, DWORD Reason, LPVOID Reserved)
+{
+ if (Reason == DLL_PROCESS_ATTACH)
+  CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)Main, NULL, NULL, NULL);
+ MessageBoxA(NULL, "[MDH] v.Sazon SuperKill and WallHacker | Keys: WallHacker F5,Super Kill F6 | For CrossFire NA", "ANTI-FURTO", NULL);
+ return TRUE;
+}
